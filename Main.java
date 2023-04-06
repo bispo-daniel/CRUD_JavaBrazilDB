@@ -1,5 +1,3 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -8,26 +6,13 @@ import java.sql.ResultSet;
 import javax.swing.*;
 
 public class Main {
-    private static String dbUrl = "jdbc:mysql://localhost:3306/brasil";
-    private static String user = "root";
-    private static String pass = "1234";
-    private static Connection conn;
 
-    private static void connect(){
-        try {
-            conn = DriverManager.getConnection(dbUrl, user, pass);
-
-            if(conn != null){
-                JOptionPane.showMessageDialog(null, "Database connected!");
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
+    static MyConnection myConnection = new MyConnection();
 
     private static void menu(){
         try {
-            String options = "Seja bem-vindo(a)\n\n 0)Sair\n 1) Criar estado\n 2) Listar estados\n 3) Atualizar estado\n 4) Excluir estado";
+            String options = "Seja bem-vindo(a)\n\n 1) Criar estado\n 2) Listar estados\n 3) Atualizar estado\n 4) Excluir estado\n" +
+                " 5) Criar cidade\n 6) Listar cidades\n 7) Atualizar cidade\n 8) Deletar cidade\n 0) Sair";
             String opString = JOptionPane.showInputDialog(null, options);
             int op = Integer.parseInt(opString);
 
@@ -47,14 +32,154 @@ public class Main {
                 case 4:
                     deleteState();
                         break;
+                case 5:
+                    createCity();
+                        break;
+                case 6:
+                    listCities();
+                        break;
+                case 7:
+                    updateCity();
+                        break;
+                case 8:
+                    deleteCity();
+                        break;
                 default:
                     JOptionPane.showMessageDialog(null, "Digite uma opção válida");
                     menu();
             }
         } catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(null, "Você pode ter digitado uma letra onde um número esperado");
+            JOptionPane.showMessageDialog(null, "Você pode ter digitado uma letra onde um número é esperado");
             menu();
         }
+    }
+
+    private static void createCity() {
+        String nome = JOptionPane.showInputDialog(null, "Digite o nome da cidade");
+        String stateIdStr = JOptionPane.showInputDialog("Digite o id do estado");
+            int stateId = Integer.parseInt(stateIdStr);
+        String populationStr = JOptionPane.showInputDialog(null, "Digite a população da cidade");
+            int population = Integer.parseInt(populationStr);
+
+        try {
+            String sql = "INSERT INTO cidade (nome, estado_id, populacao) VALUES (?, ?, ?)";
+            PreparedStatement statement = myConnection.conn.prepareStatement(sql);
+            statement.setString(1, nome);
+            statement.setInt(2, stateId);
+            statement.setInt(3, population);
+
+            int rowUpdated = statement.executeUpdate();
+            if(rowUpdated > 0){
+                JOptionPane.showMessageDialog(null, "Cidade criada com sucesso!");
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        menu();
+    }
+
+    private static String citiesList;
+    private static void listCities() {
+        citiesList = "";
+
+        try {
+            String sql = "SELECT c.nome, c.populacao, e.sigla FROM cidade c JOIN estado e ON c.estado_id = e.id";
+            Statement state = myConnection.conn.createStatement();
+            ResultSet res = state.executeQuery(sql);
+
+            while(res.next()){
+                String name = res.getString(1);
+                int populacao = res.getInt(2);
+                String sigla = res.getString(3);
+
+                String data = "%s (%s) - População: %d \n";
+                citiesList += String.format(data, name, sigla, populacao);
+            }
+
+            JOptionPane.showMessageDialog(null, citiesList);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        menu();
+    }
+
+    static private void updateThisCityColumn(String column, String cityName){
+        try {
+            String newValue = JOptionPane.showInputDialog(null, "Digite o novo valor");
+
+            String sql = "UPDATE cidade SET %s = ? WHERE nome = ?";
+            String formatSQL = String.format(sql, column);
+
+            PreparedStatement state = myConnection.conn.prepareStatement(formatSQL);
+            
+            if(column == "nome"){
+                state.setString(1, newValue);
+            } else {
+                int newValueInt = Integer.parseInt(newValue);
+                state.setInt(1, newValueInt);
+            }
+
+            state.setString(2, cityName);
+
+            int effect = state.executeUpdate();
+            if(effect > 0){
+                String successMsg = "%s atualizado(a) com sucesso!";
+                JOptionPane.showMessageDialog(null, String.format(successMsg, column));
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void updateCity() {
+        String nome = JOptionPane.showInputDialog(null, "Qual cidade deseja atualizar?");
+        
+        String options = "O que deseja alterar?\n\n 1) Nome\n 2) Id do estado\n 3) População";
+        String opStr = JOptionPane.showInputDialog(null, options);
+        int op = Integer.parseInt(opStr);
+
+        switch(op){
+            case 1:
+                updateThisCityColumn("nome", nome);
+                break;
+            case 2:
+                updateThisCityColumn("estado_id", nome);
+                break;
+            case 3:
+                updateThisCityColumn("populacao", nome);
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Digite uma opção válida");
+                menu();
+        }
+
+        menu();
+    }
+
+    private static void deleteCity() {
+        try {
+            String nome = JOptionPane.showInputDialog(null, "Digite o nome da cidade para excluí-la");
+
+            String sql = "DELETE FROM cidade WHERE nome = ?";
+            PreparedStatement state = myConnection.conn.prepareStatement(sql);
+
+            state.setString(1, nome);
+            int effect = state.executeUpdate();
+
+            if(effect > 0){
+                String message = "%s excluído(a) com sucesso!";
+                JOptionPane.showMessageDialog(null, String.format(message, nome));
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        menu();
     }
 
     private static void createState(){
@@ -66,7 +191,7 @@ public class Main {
 
         try {
             String sql = "INSERT INTO estado (nome, sigla, regiao, populacao) VALUES (?, ?, ?, ?)";
-            PreparedStatement state = conn.prepareStatement(sql);
+            PreparedStatement state = myConnection.conn.prepareStatement(sql);
 
             state.setString(1, nome);
             state.setString(2, sigla);
@@ -91,7 +216,7 @@ public class Main {
 
         try {
             String sql = "Select * from estado";
-            Statement state = conn.createStatement();
+            Statement state = myConnection.conn.createStatement();
             ResultSet res = state.executeQuery(sql);
 
             while(res.next()){
@@ -122,7 +247,7 @@ public class Main {
             String sql = "UPDATE estado SET %s = ? WHERE nome = ?";
             formatedSQL = String.format(sql, columnName);
 
-            PreparedStatement state = conn.prepareStatement(formatedSQL);
+            PreparedStatement state = myConnection.conn.prepareStatement(formatedSQL);
 
             if(columnName == "populacao"){
                 newPopulation = Integer.parseInt(newValue);
@@ -176,13 +301,14 @@ public class Main {
 
         try {
             String sql = "DELETE FROM estado WHERE nome = ?";
-            PreparedStatement state = conn.prepareStatement(sql);
+            PreparedStatement state = myConnection.conn.prepareStatement(sql);
 
             state.setString(1, nome);
             int deleteRow = state.executeUpdate();
 
             if(deleteRow > 0) {
-                JOptionPane.showMessageDialog(null, "Estado excluído com sucesso!");
+                String msg = "%s excluído(a) com sucesso!";
+                JOptionPane.showMessageDialog(null, String.format(msg, nome));
             }
 
         } catch (SQLException e){
@@ -193,7 +319,7 @@ public class Main {
     }
 
     public static void main(String[] args){
-        connect();
+        myConnection.connect();
         menu();
     }
 }
