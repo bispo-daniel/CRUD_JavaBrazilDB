@@ -14,14 +14,14 @@ public class ListStates {
             ResultSet res = state.executeQuery(sql);
 
             while(res.next()){
-                int id = res.getInt(1);
-                String name = res.getString("nome");
-                String sigla = res.getString(3);
-                String region = res.getString("regiao");
-                int population = res.getInt(5);
+                int stateId = res.getInt(1);
+                String stateName = res.getString("nome");
+                String stateAbbreviation = res.getString(3);
+                String stateRegion = res.getString("regiao");
+                int statePopulation = res.getInt(5);
 
-                String data = "Id: %d - Nome: %s - Sigla: %s - Região: %s - População: %d \n";
-                stateList += String.format(data, id, name, sigla, region, population);
+                String rowFromDB = "Id: %d - Name: %s - Abbr.: %s - Region: %s - Population: %d \n";
+                stateList += String.format(rowFromDB, stateId, stateName, stateAbbreviation, stateRegion, statePopulation);
             }
 
             JOptionPane.showMessageDialog(null, stateList);

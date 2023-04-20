@@ -3,9 +3,36 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
 public class UpdateState {
+    static void updateState() {
+        String stateName = JOptionPane.showInputDialog(null, "Which state do you want to update?\n Type it's name");
+        
+        String getOptionString = JOptionPane.showInputDialog(null, "What do you want to update?\n\n 1) State's name\n 2) State's abbreviation\n 3) State's region\n 4) State's population");
+        int column = Integer.parseInt(getOptionString);
+
+            switch(column){
+                case 1:
+                    updateNewUpdate(stateName, "nome");
+                    break;
+                case 2:
+                    updateNewUpdate(stateName, "sigla");
+                    break;
+                case 3:
+                    updateNewUpdate(stateName, "regiao");
+                    break;
+                case 4:
+                    updateNewUpdate(stateName, "populacao");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Type a valid option...");
+                    updateState();
+            }
+
+        Main.menu();
+    }
+
     private static void updateNewUpdate(String stateName, String columnName) {
         try {
-            String newValue = JOptionPane.showInputDialog(null, "Digite o novo valor");
+            String newValue = JOptionPane.showInputDialog(null, "Type the new value");
             int newPopulation;
             String formatedSQL;
 
@@ -25,7 +52,7 @@ public class UpdateState {
 
             int rowUpdated = state.executeUpdate();
             if(rowUpdated > 0) {
-                String message = "%s atualizado(a) com sucesso!";
+                String message = "%s successfully updated!";
                 String formatedMsg = String.format(message, columnName);
                 JOptionPane.showMessageDialog(null, formatedMsg);
             }
@@ -34,31 +61,4 @@ public class UpdateState {
             e.printStackTrace();
         }
     }
-
-    static void updateState() {
-        String stateName = JOptionPane.showInputDialog(null, "Digite o nome do estado para atualizá-lo");
-        String columnStr = JOptionPane.showInputDialog(null, "O que deseja atualizar?\n\n 1) Nome\n 2) Sigla\n 3) Região\n 4) População");
-        int column = Integer.parseInt(columnStr);
-
-            switch(column){
-                case 1:
-                    updateNewUpdate(stateName, "nome");
-                    break;
-                case 2:
-                    updateNewUpdate(stateName, "sigla");
-                    break;
-                case 3:
-                    updateNewUpdate(stateName, "regiao");
-                    break;
-                case 4:
-                    updateNewUpdate(stateName, "populacao");
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Digite uma opção válida.");
-                    updateState();
-            }
-
-        Main.menu();
-    }
-
 }

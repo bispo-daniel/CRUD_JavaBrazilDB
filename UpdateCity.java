@@ -3,9 +3,34 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
 public class UpdateCity {
-    static private void updateThisCityColumn(String column, String cityName){
+    static void updateCity() {
+        String cityName = JOptionPane.showInputDialog(null, "Which city do you want to update?\n Type it's name");
+        
+        String options = "What do you want to update?\n\n 1) City's name\n 2) City's state id\n 3) City's population";
+        String getOptionString = JOptionPane.showInputDialog(null, options);
+        int column = Integer.parseInt(getOptionString);
+
+        switch(column){
+            case 1:
+                updateThisCityColumn(cityName, "nome");
+                break;
+            case 2:
+                updateThisCityColumn(cityName, "estado_id");
+                break;
+            case 3:
+                updateThisCityColumn(cityName, "populacao");
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Type a valid option...");
+                Main.menu();
+        }
+
+        Main.menu();
+    }
+
+    static private void updateThisCityColumn(String cityName, String column){
         try {
-            String newValue = JOptionPane.showInputDialog(null, "Digite o novo valor");
+            String newValue = JOptionPane.showInputDialog(null, "Type the new value");
 
             String sql = "UPDATE cidade SET %s = ? WHERE nome = ?";
             String formatSQL = String.format(sql, column);
@@ -23,37 +48,12 @@ public class UpdateCity {
 
             int effect = state.executeUpdate();
             if(effect > 0){
-                String successMsg = "%s atualizado(a) com sucesso!";
+                String successMsg = "%s successfully updated";
                 JOptionPane.showMessageDialog(null, String.format(successMsg, column));
             }
 
         } catch (SQLException e){
             e.printStackTrace();
         }
-    }
-
-    static void updateCity() {
-        String nome = JOptionPane.showInputDialog(null, "Qual cidade deseja atualizar?");
-        
-        String options = "O que deseja alterar?\n\n 1) Nome\n 2) Id do estado\n 3) População";
-        String opStr = JOptionPane.showInputDialog(null, options);
-        int op = Integer.parseInt(opStr);
-
-        switch(op){
-            case 1:
-                updateThisCityColumn("nome", nome);
-                break;
-            case 2:
-                updateThisCityColumn("estado_id", nome);
-                break;
-            case 3:
-                updateThisCityColumn("populacao", nome);
-                break;
-            default:
-                JOptionPane.showMessageDialog(null, "Digite uma opção válida");
-                Main.menu();
-        }
-
-        Main.menu();
     }
 }

@@ -5,17 +5,17 @@ import javax.swing.*;
 public class DeleteCity {
     static void deleteCity() {
         try {
-            String nome = JOptionPane.showInputDialog(null, "Digite o nome da cidade para excluí-la");
+            String name = JOptionPane.showInputDialog(null, "Type the city's name to delete it");
 
             String sql = "DELETE FROM cidade WHERE nome = ?";
             PreparedStatement state = Main.myConnection.conn.prepareStatement(sql);
 
-            state.setString(1, nome);
+            state.setString(1, name);
             int effect = state.executeUpdate();
 
             if(effect > 0){
-                String message = "%s excluído(a) com sucesso!";
-                JOptionPane.showMessageDialog(null, String.format(message, nome));
+                String message = "%s successfully deleted!";
+                JOptionPane.showMessageDialog(null, String.format(message, name));
             }
 
         } catch (SQLException e){

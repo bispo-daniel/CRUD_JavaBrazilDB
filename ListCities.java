@@ -14,12 +14,12 @@ public class ListCities {
             ResultSet res = state.executeQuery(sql);
 
             while(res.next()){
-                String name = res.getString(1);
-                int populacao = res.getInt(2);
-                String sigla = res.getString(3);
+                String cityName = res.getString(1);
+                int cityPopulation = res.getInt(2);
+                String stateAbbreviation = res.getString(3);
 
-                String data = "%s (%s) - População: %d \n";
-                citiesList += String.format(data, name, sigla, populacao);
+                String rowFromDB = "%s (%s) - Population: %d \n";
+                citiesList += String.format(rowFromDB, cityName, stateAbbreviation, cityPopulation);
             }
 
             JOptionPane.showMessageDialog(null, citiesList);

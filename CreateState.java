@@ -4,24 +4,24 @@ import java.sql.PreparedStatement;
 
 public class CreateState {
     static void createState(){
-        String nome = JOptionPane.showInputDialog(null, "Digite o nome do estado");
-        String sigla = JOptionPane.showInputDialog(null, "Digite a sigla do estado (Máximo: 2 Caracteres)");
-        String regiao = JOptionPane.showInputDialog(null, "Digite a região do estado");
-        String populacaoStr = JOptionPane.showInputDialog(null, "Digite a população do estado");
-            int populacao = Integer.parseInt(populacaoStr);
+        String stateName = JOptionPane.showInputDialog(null, "Type the new state's name");
+        String stateAbbreviation = JOptionPane.showInputDialog(null, "Type the state's abbreviation (Max: 2 characters)");
+        String stateRegion = JOptionPane.showInputDialog(null, "Type the state's region");
+        String statePopulationString = JOptionPane.showInputDialog(null, "Type the state's population");
+            int statePopulation = Integer.parseInt(statePopulationString);
 
         try {
             String sql = "INSERT INTO estado (nome, sigla, regiao, populacao) VALUES (?, ?, ?, ?)";
             PreparedStatement state = Main.myConnection.conn.prepareStatement(sql);
 
-            state.setString(1, nome);
-            state.setString(2, sigla);
-            state.setString(3, regiao);
-            state.setInt(4, populacao);
+            state.setString(1, stateName);
+            state.setString(2, stateAbbreviation);
+            state.setString(3, stateRegion);
+            state.setInt(4, statePopulation);
 
             int success = state.executeUpdate();
             if(success > 0){
-                JOptionPane.showMessageDialog(null, "Estado criado com sucesso!");
+                JOptionPane.showMessageDialog(null, "State successfully created!");
             }
 
         } catch (SQLException e){

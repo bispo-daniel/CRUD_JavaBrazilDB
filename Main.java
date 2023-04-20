@@ -6,8 +6,8 @@ public class Main {
 
     static void menu(){
         try {
-            String options = "Seja bem-vindo(a)\n\n 1) Criar estado\n 2) Listar estados\n 3) Atualizar estado\n 4) Excluir estado\n" +
-                " 5) Criar cidade\n 6) Listar cidades\n 7) Atualizar cidade\n 8) Deletar cidade\n 0) Sair";
+            String options = "Welcome!!\n\n 1) Create state\n 2) List states\n 3) Update state\n 4) Delete state\n" +
+                " 5) Create city\n 6) List cities\n 7) Update city\n 8) Delete city\n 0) Sair";
             String opString = JOptionPane.showInputDialog(null, options);
             int op = Integer.parseInt(opString);
 
@@ -40,11 +40,11 @@ public class Main {
                     DeleteCity.deleteCity();
                         break;
                 default:
-                    JOptionPane.showMessageDialog(null, "Digite uma opção válida");
+                    JOptionPane.showMessageDialog(null, "Type a valid option...");
                     menu();
             }
         } catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(null, "Você pode ter digitado uma letra onde um número é esperado");
+            JOptionPane.showMessageDialog(null, "You may have typed a letter where a number is expected!\n Try again...");
             menu();
         }
     }
